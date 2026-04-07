@@ -8,9 +8,8 @@
 ## Mục lục lời giải
 - [Bài 1 - Tặng bánh](bai-1.md)
 - [Bài 2 - Chia kẹo](bai-2.md)
-- [Bài 3 - (đang cập nhật)](bai-3.md)
-- [Bài 4 - (đang cập nhật)](bai-4.md)
-- [Bài 5 - (đang cập nhật)](bai-5.md)
+- [Bài 3 - Chuỗi lặp đều](bai-3.md)
+- [Bài 4 - Tính tích](bai-4.md)
 
 ---
 

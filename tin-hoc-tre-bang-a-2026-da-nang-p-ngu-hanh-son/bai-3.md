@@ -27,6 +27,41 @@ Hãy sắp xếp lại các ký tự trong `S` để thu được một chuỗi 
 ## 📤 Output
 - In ra một chuỗi lặp đều đúng `k` lần tạo được từ `S`
 - Nếu không thể, in ra `-1`
+- Nếu có nhiều đáp án, in ra một đáp án bất kỳ
+
+---
+
+## 🧪 Test mẫu
+### Test mẫu 1
+Input:
+```text
+2
+aabbcc
+```
+
+Output:
+```text
+abcabc
+```
+
+Giải thích:
+- Kết quả `abcabc` có thể tách thành `abc` và `abc`, tức là một chuỗi con được lặp đúng `2` lần.
+- Chuỗi này dùng lại đúng các ký tự của `S` sau khi sắp xếp lại.
+
+### Test mẫu 2
+Input:
+```text
+2
+abcd
+```
+
+Output:
+```text
+-1
+```
+
+Giải thích:
+- Không thể sắp xếp các ký tự của `abcd` để thu được chuỗi có dạng `T` lặp đúng `2` lần.
 
 ---
 
@@ -35,10 +70,22 @@ Ta cần tạo chuỗi kết quả có dạng:
 
 `T + T + ... + T` (lặp `k` lần)
 
-Vì được phép sắp xếp lại ký tự nên thứ tự ban đầu không quan trọng, chỉ cần quan tâm số lượng từng ký tự.
+Vì được phép sắp xếp lại ký tự nên thứ tự ban đầu không quan trọng,
+chỉ cần quan tâm số lượng từng ký tự.
 
-Giả sử ký tự `c` xuất hiện `cnt[c]` lần trong `S`.  
-Nếu kết quả là `T * k`, thì trong mỗi bản `T`, ký tự `c` phải xuất hiện:
+Hãy tưởng tượng ta chia chuỗi kết quả thành `k` khối giống hệt nhau,
+mỗi khối chính là `T`.
+
+Ký hiệu `cnt[c]` là số lần ký tự `c` xuất hiện trong chuỗi `S`.
+
+Ví dụ nếu `S = aabbcc` thì:
+- `cnt = {'a': 2, 'b': 2, 'c': 2}`
+- `cnt['a'] = 2`, `cnt['b'] = 2`, `cnt['c'] = 2`
+
+Giả sử ký tự `c` xuất hiện `cnt[c]` lần trong `S`.
+
+Nếu kết quả là `T * k`, tổng số ký tự `c` phải được chia đều cho `k` khối.
+Vì vậy, trong mỗi bản `T`, ký tự `c` phải xuất hiện:
 
 `cnt[c] / k`
 
@@ -50,54 +97,14 @@ Nếu có ít nhất 1 ký tự không chia hết cho `k` thì không thể tạ
 
 ---
 
-## 💡 Ý tưởng
-1. Đếm tần suất xuất hiện của từng ký tự.
-2. Kiểm tra điều kiện chia hết cho `k`.
-3. Nếu hợp lệ, tạo chuỗi nền `T`:
-   - mỗi ký tự `c` lặp `cnt[c] // k` lần.
-4. In `T * k`.
-
----
-
 ## 🔍 Thuật toán
 1. Nhập `k`, `S`.
-2. Dùng `Counter` để đếm tần suất.
+2. Dùng `Counter` để đếm tần suất, lưu vào `cnt` (`cnt[c]` là số lần xuất hiện của ký tự `c`).
 3. Với mỗi ký tự:
    - nếu `cnt[c] % k != 0` -> in `-1` và dừng.
 4. Tạo `T` từ các ký tự theo thứ tự từ điển:
    - thêm `c * (cnt[c] // k)` vào `T`.
 5. In `T * k`.
-
----
-
-## 🧪 Ví dụ
-### Ví dụ 1
-Input:
-```text
-2
-abcd
-```
-Mỗi ký tự xuất hiện 1 lần, không chia hết cho 2 -> không thể.
-
-Output:
-```text
--1
-```
-
-### Ví dụ 2
-Input:
-```text
-2
-aabbcc
-```
-Mỗi ký tự chia đều được cho 2:
-- trong `T`: mỗi ký tự 1 lần -> `T = abc`
-- kết quả: `abcabc`
-
-Output:
-```text
-abcabc
-```
 
 ---
 
@@ -126,15 +133,6 @@ else:
 ## ⚡ Độ phức tạp
 - Thời gian: `O(n + m log m)` với `m` là số ký tự khác nhau (ở đây `m <= 26`, nên coi như gần `O(n)`)
 - Bộ nhớ: `O(m)` (hoặc `O(26)`)
-
----
-
-## 🧾 Kết luận
-Bản chất bài toán là kiểm tra khả năng chia đều tần suất từng ký tự cho `k`.
-
-Nếu mọi ký tự đều chia hết cho `k`, ta luôn dựng được đáp án bằng cách:
-- tạo một khối `T`
-- rồi lặp `T` đúng `k` lần.
 
 ---
 
