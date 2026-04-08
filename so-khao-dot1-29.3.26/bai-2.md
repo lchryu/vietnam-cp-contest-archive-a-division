@@ -22,26 +22,55 @@ In ra số thứ tự của bảng cửu chương nhỏ nhất chứa `X`, hoặ
 
 ---
 
-## 🧠 Phân tích
-Ta cần tìm xem có tồn tại hai số `i, j` sao cho:
+## 🧪 Test mẫu
+Input:
+```text
+12
+```
 
-`i * j = X`, với `1 <= i, j <= 9`.
+Output:
+```text
+2
+```
 
-Trong đó:
-- `i` là bảng cửu chương
-- `j` là số nhân
-
-Nếu có nhiều `i` thỏa mãn, phải chọn `i` nhỏ nhất.
+Giải thích:
+- `12` có thể viết thành `2 × 6` và `3 × 4`.
+- Chọn bảng cửu chương nhỏ nhất nên in `2`.
 
 ---
 
-## 💡 Ý tưởng
-Duyệt `i` từ `1` đến `9`:
-- Nếu `X % i == 0` thì `i` là ước của `X`.
-- Gọi `j = X // i`.
-- Nếu `1 <= j <= 9` thì tìm được phép nhân hợp lệ trong bảng cửu chương.
+## 🧠 Bản chất bài toán
+Thực chất bài này hỏi:
 
-Vì duyệt `i` tăng dần, lần đầu thỏa mãn chính là đáp án nhỏ nhất.
+> Có tồn tại `i, j ∈ [1..9]` sao cho `i × j = X` không?
+
+Nếu có:
+- `i` chính là "bảng cửu chương"
+- cần lấy `i` nhỏ nhất
+
+Nói cách khác, ta kiểm tra `X` có thuộc tập:
+
+`{i × j | 1 ≤ i, j ≤ 9}`
+
+---
+
+## ⚠️ Nhận xét nhanh
+- Giá trị lớn nhất trong bảng cửu chương là `9 × 9 = 81`.
+  - Nếu `X > 81` thì chắc chắn kết quả là `0`.
+- `X = 1` thì luôn thuộc bảng `1`.
+
+---
+
+## 💡 Ý tưởng tối ưu
+Ta chỉ cần kiểm tra các ước của `X`.
+
+Logic:
+- Duyệt `i` từ `1` đến `9`.
+- Nếu `i` là ước của `X` (`X % i == 0`):
+  - `j = X // i`
+  - nếu `1 <= j <= 9` thì hợp lệ.
+
+Vì duyệt `i` từ nhỏ đến lớn, nghiệm đầu tiên chính là đáp án.
 
 ---
 
@@ -55,56 +84,7 @@ Vì duyệt `i` tăng dần, lần đầu thỏa mãn chính là đáp án nhỏ
 
 ---
 
-## 🧪 Ví dụ
-### Ví dụ 1
-Input:
-
-```text
-12
-```
-
-Phân tích:
-- `1 x 12` (không hợp lệ vì `12 > 9`)
-- `2 x 6` (hợp lệ)
-- `3 x 4` (hợp lệ)
-
-Chọn bảng nhỏ nhất: `2`.
-
-Output:
-
-```text
-2
-```
-
-### Ví dụ 2
-Input:
-
-```text
-14
-```
-
-`2 x 7` hợp lệ, nên kết quả là:
-
-```text
-2
-```
-
-### Ví dụ 3
-Input:
-
-```text
-13
-```
-
-Không có cặp nào trong phạm vi `1..9`, nên:
-
-```text
-0
-```
-
----
-
-## 💻 Code Python
+## 💻 Code Python (tối ưu)
 ```python
 x = int(input())
 
@@ -127,6 +107,120 @@ else:
 - `if 1 <= j <= 9`: xác nhận phép nhân nằm trong bảng cửu chương.
 - `print(i); break`: in bảng nhỏ nhất rồi dừng.
 - `else: print(0)`: không tìm được bảng nào hợp lệ.
+
+---
+
+## 🧪 Ví dụ
+### Ví dụ 1
+Input:
+```text
+12
+```
+
+| i | j = X / i | i × j hợp lệ trong [1..9]? |
+|---|-----------|----------------------------|
+| 1 | 12        | ❌ |
+| 2 | 6         | ✅ |
+| 3 | 4         | ✅ |
+
+Chọn `i` nhỏ nhất -> `2`.
+
+Output:
+```text
+2
+```
+
+### Ví dụ 2
+Input:
+```text
+14
+```
+
+Có `2 × 7` hợp lệ nên kết quả là:
+```text
+2
+```
+
+### Ví dụ 3
+Input:
+```text
+13
+```
+
+Không có cặp nào hợp lệ trong `1..9`, nên:
+```text
+0
+```
+
+---
+
+## 🐢 Brute force (tham khảo)
+Hai cách dưới đây đều duyệt toàn bộ cặp `(i, j)` với `1 <= i, j <= 9`,
+nên vẫn AC vì dữ liệu rất nhỏ (tối đa `81` phép kiểm tra).
+
+### Cách 1: Dùng cờ `found` + `break`
+Ý tưởng:
+- Duyệt `i` từ nhỏ đến lớn.
+- Nếu tìm được `i * j == X` thì in luôn `i` và dừng.
+- Vì `i` tăng dần, đáp án đầu tiên tìm được là nhỏ nhất.
+
+```python
+x = int(input())
+found = False
+
+for i in range(1, 10):
+    for j in range(1, 10):
+        if i * j == x:
+            print(i)
+            found = True
+            break
+    if found:
+        break
+
+if not found:
+    print(0)
+```
+
+### Cách 2: Dùng biến `ans` (không dừng sớm)
+Ý tưởng:
+- Duyệt hết các cặp `(i, j)`.
+- Nếu `i * j == X` thì cập nhật `ans = min(ans, i)`.
+- Cuối cùng nếu `ans` không đổi thì in `0`, ngược lại in `ans`.
+
+```python
+x = int(input())
+
+ans = 10  # lớn hơn mọi bảng hợp lệ (1..9)
+
+for i in range(1, 10):
+    for j in range(1, 10):
+        if i * j == x:
+            ans = min(ans, i)
+
+if ans == 10:
+    print(0)
+else:
+    print(ans)
+```
+
+> Cả hai cách đều đúng và có thể AC.
+> Tuy nhiên vẫn khuyến khích dùng cách tối ưu ở phần trên (duyệt theo ước),
+> vì ngắn hơn và hiệu quả hơn.
+>
+> So sánh nhanh độ phức tạp:
+> - Brute force 2 vòng: `O(9 * 9) = O(81)` (vẫn AC do hằng số nhỏ)
+> - Duyệt theo ước: `O(9)` (gọn và tốt hơn)
+
+---
+
+## 🧠 Nhận diện dạng bài
+Khi thấy:
+- giới hạn rất nhỏ (`1..9`)
+- yêu cầu tìm cặp nhân `i, j`
+
+Nghĩ ngay đến:
+- duyệt ước (tối ưu)
+- hoặc brute force (để kiểm tra nhanh)
 
 ---
 
