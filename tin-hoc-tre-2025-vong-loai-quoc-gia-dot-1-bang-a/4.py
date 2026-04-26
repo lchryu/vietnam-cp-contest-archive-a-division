@@ -1,39 +1,38 @@
-def sum_n(n: int) -> int:
-    if n <= 0:
-        return 0
-    k = n // 3
-    m = n % 3
+def f(x: int) -> int:
+    f: int = x // 3
+    r: int = x % 3
+    s: int = 0
+    # for i in range(f):
+    #     s += 9 * i + 6
+    s += 9 * f * (f - 1) // 2 + 6 * f
+    if r == 0:
+        return s
     
-    # Tổng của k nhóm đầy đủ (mỗi nhóm i có tổng là 9i - 3)
-    # Sum_{i=1 to k} (9i - 3) = 9 * k*(k+1)/2 - 3k = (9k^2 + 9k - 6k) / 2 = (9k^2 + 3k) / 2
-    total = (9 * k * k + 3 * k) // 2
-    
-    # Xét nhóm thứ k + 1
-    next_group_idx = k + 1
-    start_val = 3 * k + 1
-    
-    if m > 0:
-        if next_group_idx % 2 == 1:
-            # Nhóm lẻ: tăng dần 3k+1, 3k+2, 3k+3
-            for i in range(m):
-                total += (start_val + i)
+    if f % 2 == 1:
+        if r == 1:
+            s += 3 * f + 3
         else:
-            # Nhóm chẵn: giảm dần 3k+3, 3k+2, 3k+1
-            # Các giá trị là: (3k+3), (3k+2), (3k+1)
-            # m=1 -> 3k+3
-            # m=2 -> (3k+3) + (3k+2)
-            current_val = 3 * k + 3
-            for i in range(m):
-                total += (current_val - i)
-                
-    return total
+            s += 3 * f + 3 + 3 * f + 2
+    else:
+        if r == 1:
+            s += 3 * f + 1
+        else:
+            s += 3 * f + 1 + 3 * f + 2            
+    
+    return s     
 
-try:
-    import sys
-    input_data = sys.stdin.read().split()
-    if len(input_data) >= 2:
-        l = int(input_data[0])
-        r = int(input_data[1])
-        print(sum_n(r) - sum_n(l - 1))
-except EOFError:
-    pass
+l = int(input())
+r = int(input())
+print(f(r) - f(l - 1))
+
+# 1 2 3 | 6 5 4 | 7 8 9 | 12
+# 0       1        2       3
+# f(10) = 57
+
+
+
+
+'''
+0-> (f - 1)
+9 * f * (f - 1) // 2 + 6f 
+'''
