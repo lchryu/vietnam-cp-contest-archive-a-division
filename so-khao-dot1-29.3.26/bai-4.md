@@ -121,7 +121,8 @@ Tổng:
 ```python
 def count_2(h, m):
     return str(h).zfill(2).count('2') + str(m).zfill(2).count('2')
-
+    # hoặc đơn giản hơn
+    # return (str(h) + str(m)).count('2)
 h1 = int(input())
 m1 = int(input())
 h2 = int(input())
@@ -146,6 +147,12 @@ while True:
 
 print(total)
 ```
+
+> Ghi chú:
+> - Với bài này (đếm chữ số `'2'`), có thể viết gọn:
+>   `def cnt2(h, m): return (str(h) + str(m)).count('2')`
+> - Tuy nhiên nếu đổi sang đếm chữ số `'0'` thì cần giữ dạng 2 chữ số
+>   cho giờ/phút (dùng `zfill(2)`), để không bị sai ở các mốc như `02:00`.
 
 ---
 
