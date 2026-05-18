@@ -121,3 +121,70 @@ for _ in range(k + 1):
 
 print(count)
 ```
+
+### Approach 2: Using a `for` loop (Total minutes conversion)
+Instead of manually managing the minutes and hours, we can convert the current time to the total elapsed minutes of the day, then use the modulo operator to update the time efficiently.
+
+```python
+import sys
+
+def sum_digits(n: int) -> int:
+    return n // 10 + n % 10
+
+def is_harmonious(h: int, m: int) -> bool:
+    return sum_digits(h) == sum_digits(m)
+
+h = int(sys.stdin.readline())
+m = int(sys.stdin.readline())
+k = int(sys.stdin.readline())
+
+current_minutes = h * 60 + m
+harmonious_count = 0
+
+for _ in range(k + 1):
+    current_h = (current_minutes // 60) % 24
+    current_m = current_minutes % 60
+    
+    if is_harmonious(current_h, current_m):
+        harmonious_count += 1
+        
+    current_minutes = (current_minutes + 1) % 1440
+
+print(harmonious_count)
+```
+
+### Approach 3: Using a `while` loop
+We can use a `while True` loop and keep track of the elapsed minutes. It is important to check the break condition (whether $K$ minutes have passed) immediately after evaluating the current time.
+
+```python
+import sys
+
+def sum_digits(n: int) -> int:
+    return n // 10 + n % 10
+
+def is_harmonious(h: int, m: int) -> bool:
+    return sum_digits(h) == sum_digits(m)
+
+h = int(sys.stdin.readline())
+m = int(sys.stdin.readline())
+k = int(sys.stdin.readline())
+
+current_minutes = h * 60 + m
+harmonious_count = 0
+elapsed_minutes = 0
+
+while True:
+    current_h = (current_minutes // 60) % 24
+    current_m = current_minutes % 60
+    
+    if is_harmonious(current_h, current_m):
+        harmonious_count += 1
+        
+    if elapsed_minutes == k:
+        break
+        
+    elapsed_minutes += 1
+    current_minutes = (current_minutes + 1) % 1440
+
+print(harmonious_count)
+```

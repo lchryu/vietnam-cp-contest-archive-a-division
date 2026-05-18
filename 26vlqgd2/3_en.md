@@ -6,17 +6,17 @@
 
 Given a chessboard of size $N \times N$. Rows are numbered from $1$ to $N$ from top to bottom, and columns are numbered from $1$ to $N$ from left to right.
 
-A queen is standing at cell $(x, y)$. The queen moves according to chess rules: in one move, it can move to any cell in the same row, same column, or same diagonal as its current cell, as long as the target cell is still inside the board.
+A queen is standing at cell $(x, y)$. In one move, the queen can move to any cell in the same row, same column, or same diagonal as its current cell, as long as the target cell is still inside the board.
 
-**Task:** Count how many cells $(u, v)$ the queen can move to in exactly 1 move such that $u + v$ is even.
+**Task:** Count how many cells $(u, v)$ the queen can move to in exactly one move such that $u + v$ is even.
 
 ## Input
 
-The input consists of three lines. Each line contains one natural number, respectively $N$, $x$, and $y$ ($1 \le x, y \le N \le 10^8$).
+The input consists of three integers $N, x, y$ ($1 \le x, y \le N \le 10^8$). They may be written on separate lines or separated by spaces.
 
 ## Output
 
-Print one natural number: the number of valid next cells.
+Print one integer: the number of valid target cells.
 
 ## Examples
 
@@ -48,94 +48,312 @@ Print one natural number: the number of valid next cells.
 
 # Detailed Explanation
 
-## 1. Movement Conditions
+## 1. Movement conditions
 
-The queen at $(x, y)$ can move to $(u, v)$ if:
+The queen at $(x, y)$ can move to a different cell $(u, v)$ if one of these conditions holds:
 
-1. Same row: $u = x$ and $v \neq y$.
-2. Same column: $v = y$ and $u \neq x$.
-3. Main diagonal: $u - v = x - y$ and $(u, v) \neq (x, y)$.
-4. Anti-diagonal: $u + v = x + y$ and $(u, v) \neq (x, y)$.
+1. Same row: $u = x$.
+2. Same column: $v = y$.
+3. Main diagonal: $u - v = x - y$.
+4. Anti-diagonal: $u + v = x + y$.
 
-There is one additional condition: **$u + v$ must be even.**
+The target cell must also satisfy:
 
-## 2. Parity Analysis of $u + v$
+```python
+(u + v) % 2 == 0
+```
 
-* **Same row $x$:** $u + v = x + v$. For $x + v$ to be even, $v$ must have the same parity as $x$.
-* **Same column $y$:** $u + v = u + y$. For $u + y$ to be even, $u$ must have the same parity as $y$.
-* **Anti-diagonal:** Every cell on this diagonal has the same sum $u + v = x + y$.
-  * If $x + y$ is even, every cell on this diagonal satisfies the condition.
-  * If $x + y$ is odd, no cell on this diagonal satisfies the condition.
-* **Main diagonal:** $u - v = x - y$, so $u + v = (u - v) + 2v = (x - y) + 2v$.
-  Since $2v$ is always even, $u + v$ has the same parity as $x - y$, which has the same parity as $x + y$.
-  * If $x + y$ is even, every cell on this diagonal satisfies the condition.
-  * If $x + y$ is odd, no cell on this diagonal satisfies the condition.
-
-## 3. Counting Cells
-
-### Case 1: $x + y$ is odd
-
-Only cells in the same row and same column can satisfy the condition.
-
-* Same row $x$: cells $(x, v)$ such that $v \neq y$ and $v \equiv x \pmod 2$.
-* Same column $y$: cells $(u, y)$ such that $u \neq x$ and $u \equiv y \pmod 2$.
-
-### Case 2: $x + y$ is even
-
-All 4 movement lines may contain valid cells.
-
-* Same row $x$: count columns $v$ with the same parity as $x$.
-* Same column $y$: count rows $u$ with the same parity as $y$.
-* Main diagonal, excluding $(x, y)$.
-* Anti-diagonal, excluding $(x, y)$.
-
-**Number of integers with the same parity as $A$ in the range $[1, N]$:**
-
-* If $A$ is odd: the number of odd integers is `(N + 1) // 2`.
-* If $A$ is even: the number of even integers is `N // 2`.
-
-## 4. Example 1: $N=8, x=4, y=4$
-
-$x+y = 8$, which is even.
-
-* Row 4: even $v$ values are $\{2, 6, 8\}$ after excluding $4$. There are 3 cells.
-* Column 4: even $u$ values are $\{2, 6, 8\}$ after excluding $4$. There are 3 cells.
-* Main diagonal ($u-v=0$): 8 cells, excluding $(4,4)$ leaves 7 cells.
-* Anti-diagonal ($u+v=8$): 7 cells, excluding $(4,4)$ leaves 6 cells.
-
-Total: $3 + 3 + 7 + 6 = 19$.
+Since $N$ can be as large as $10^8$, iterating over the board is impossible. We need an `O(1)` formula.
 
 ---
 
-## Solution (Python)
+## 2. Counting row and column cells
+
+### Same row $x$
+
+If the queen moves on row $x$, then $u = x$.
+
+The even-sum condition becomes:
+
+```text
+x + v is even
+```
+
+So `v` must have the same parity as `x`.
+
+### Same column $y$
+
+If the queen moves on column $y$, then $v = y$.
+
+The even-sum condition becomes:
+
+```text
+u + y is even
+```
+
+So `u` must have the same parity as `y`.
+
+We use this helper function to count how many integers in `[1, N]` have the same parity as `a`:
+
+```python
+def count_same_parity(a, n):
+    if a % 2 == 1:
+        return (n + 1) // 2
+    return n // 2
+```
+
+If `a` is odd, it returns the number of odd integers from `1` to `n`. If `a` is even, it returns the number of even integers from `1` to `n`.
+
+---
+
+## 3. Counting diagonal cells
+
+### Main diagonal
+
+The main diagonal through $(x, y)$ has equation:
+
+```text
+u - v = x - y
+```
+
+The number of cells on this diagonal is:
+
+```python
+main_diag = n - abs(x - y)
+```
+
+### Anti-diagonal
+
+The anti-diagonal through $(x, y)$ has equation:
+
+```text
+u + v = x + y
+```
+
+The number of cells on this diagonal is:
+
+```python
+if x + y <= n + 1:
+    anti_diag = x + y - 1
+else:
+    anti_diag = 2 * n - x - y + 1
+```
+
+---
+
+## 4. The important edge case: odd x + y
+
+This is where the old solution was easy to get wrong.
+
+### If $x + y$ is even
+
+The current cell $(x, y)$ also has an even coordinate sum.
+
+Therefore, when we count valid cells on the row, column, main diagonal, and anti-diagonal, the current cell is included in each count.
+
+But the queen must move to another cell, so we subtract the current cell once from each line:
+
+```python
+ans += row_count - 1
+ans += col_count - 1
+ans += main_diag - 1
+ans += anti_diag - 1
+```
+
+Both diagonals are valid in this case, because every cell on either diagonal through $(x, y)$ has the same sum parity as $(x, y)$.
+
+### If $x + y$ is odd
+
+The current cell $(x, y)$ has an odd coordinate sum.
+
+On the row:
+
+- We need `v` to have the same parity as `x`.
+- Since `x + y` is odd, `y` has the opposite parity from `x`.
+- So the current cell is not counted in the row count.
+
+On the column:
+
+- We need `u` to have the same parity as `y`.
+- Since `x + y` is odd, `x` has the opposite parity from `y`.
+- So the current cell is not counted in the column count.
+
+The diagonals contribute nothing, because every cell on either diagonal through $(x, y)$ has odd coordinate sum.
+
+So in this case:
+
+```python
+ans = row_count + col_count
+```
+
+We must not subtract `1`.
+
+---
+
+## 5. Three implementations
+
+### Solution 1: Iterate over the whole board - $O(N^2)$
+
+This is the most direct approach: iterate over every cell `(u, v)`, check whether the queen can move there, then check whether `(u + v)` is even.
+
+This version is useful for understanding the problem or passing very small tests, but it cannot pass when `N <= 10^8`.
+
+```python
+n = int(input())
+x = int(input())
+y = int(input())
+
+ans = 0
+
+for u in range(1, n + 1):
+    for v in range(1, n + 1):
+        if u == x and v == y:
+            continue
+
+        same_row = (u == x)
+        same_col = (v == y)
+        same_diag = (abs(u - x) == abs(v - y))
+
+        if same_row or same_col or same_diag:
+            if (u + v) % 2 == 0:
+                ans += 1
+
+print(ans)
+```
+
+### Solution 2: Iterate over the queen's 4 lines - $O(N)$
+
+Instead of scanning the whole board, we only scan:
+
+- The queen's row.
+- The queen's column.
+- The main diagonal.
+- The anti-diagonal.
+
+This is faster than solution 1, but still too slow for `N = 10^8`.
+
+```python
+n = int(input())
+x = int(input())
+y = int(input())
+
+ans = 0
+
+# Same row
+for v in range(1, n + 1):
+    if v != y and (x + v) % 2 == 0:
+        ans += 1
+
+# Same column
+for u in range(1, n + 1):
+    if u != x and (u + y) % 2 == 0:
+        ans += 1
+
+# Main diagonal: u - v = x - y
+for u in range(1, n + 1):
+    v = u - (x - y)
+    if 1 <= v <= n and u != x and (u + v) % 2 == 0:
+        ans += 1
+
+# Anti-diagonal: u + v = x + y
+for u in range(1, n + 1):
+    v = x + y - u
+    if 1 <= v <= n and u != x and (u + v) % 2 == 0:
+        ans += 1
+
+print(ans)
+```
+
+### Solution 3: Use formulas - $O(1)$
+
+This is the version to submit for full score.
 
 ```python
 import sys
+
 
 def count_same_parity(a, n):
     if a % 2 == 1:
         return (n + 1) // 2
     return n // 2
 
-def solve():
-    n = int(sys.stdin.readline())
-    x = int(sys.stdin.readline())
-    y = int(sys.stdin.readline())
 
-    ans = 0
+data = list(map(int, sys.stdin.read().split()))
+n, x, y = data[0], data[1], data[2]
 
-    ans += count_same_parity(x, n) - 1
-    ans += count_same_parity(y, n) - 1
+row_count = count_same_parity(x, n)
+col_count = count_same_parity(y, n)
 
-    if (x + y) % 2 == 0:
-        ans += (n - abs(x - y)) - 1
+if (x + y) % 2 == 0:
+    ans = row_count - 1
+    ans += col_count - 1
 
-        if x + y <= n + 1:
-            ans += (x + y - 1) - 1
-        else:
-            ans += (2 * n - (x + y) + 1) - 1
+    main_diag = n - abs(x - y)
+    ans += main_diag - 1
 
-    print(ans)
+    if x + y <= n + 1:
+        anti_diag = x + y - 1
+    else:
+        anti_diag = 2 * n - x - y + 1
+    ans += anti_diag - 1
+else:
+    ans = row_count + col_count
 
-solve()
+print(ans)
+```
+
+---
+
+## 6. Example checks
+
+### Example 1
+
+For $N = 8, x = 4, y = 4$:
+
+```text
+x + y = 8
+```
+
+This is even.
+
+- Row 4: even columns are `2, 4, 6, 8`; excluding column `4` leaves `3` cells.
+- Column 4: even rows are `2, 4, 6, 8`; excluding row `4` leaves `3` cells.
+- Main diagonal has `8` cells; excluding the current cell leaves `7` cells.
+- Anti-diagonal has `7` cells; excluding the current cell leaves `6` cells.
+
+Total:
+
+```text
+3 + 3 + 7 + 6 = 19
+```
+
+### Example 2
+
+For $N = 5, x = 2, y = 1$:
+
+```text
+x + y = 3
+```
+
+This is odd.
+
+- Row 2: we need even columns, which are `2, 4`, so there are `2` cells.
+- Column 1: we need odd rows, which are `1, 3, 5`, so there are `3` cells.
+- Both diagonals contribute `0` valid cells.
+
+Total:
+
+```text
+2 + 3 = 5
+```
+
+---
+
+## 7. Complexity
+
+The algorithm only uses a few arithmetic operations and does not iterate over the board.
+
+```text
+Time complexity: O(1)
+Memory usage: O(1)
 ```
